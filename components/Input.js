@@ -17,7 +17,9 @@ const Input = ({ placeholder, name, onChange }) =>
 const styles = StyleSheet.create({
   input: {
     fontFamily: 'open-sans',
-    height: 40
+    height: 40,
+    borderBottomColor: Colors.primary,
+    borderBottomWidth: 1
   }
 });
 

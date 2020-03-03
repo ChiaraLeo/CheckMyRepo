@@ -11,7 +11,6 @@ import CheckRepoScreen from './screens/CheckRepoScreen';
 import CheckUserScreen from './screens/CheckUserScreen';
 import SuccessScreen from './screens/SuccessScreen';
 
-import useLinking from './navigation/useLinking';
 import { RepoContextProvider } from './context/RepoContext';
 
 const Stack = createStackNavigator();
@@ -21,7 +20,8 @@ export default function App(props) {
   const [isLoadingComplete, setLoadingComplete] = React.useState(false)
   const [user, setUser] = React.useState('user')
   const [repo, setRepo] = React.useState('repo')
-  const valueContext = { user, setUser, repo, setRepo }
+  const [existRepoUser, setExistRepoUser] = React.useState('initial')
+  const valueContext = { user, setUser, repo, setRepo, existRepoUser, setExistRepoUser }
 
   React.useEffect(() => {
     async function loadResourcesAndDataAsync() {
@@ -31,6 +31,7 @@ export default function App(props) {
         await Font.loadAsync({
           ...Ionicons.font,
           'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
+          'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf'),
         });
       } catch (e) {
         console.warn(e);

@@ -11,19 +11,20 @@ const styles = StyleSheet.create({
     display: 'flex'
   },
   title: {
-    fontFamily: 'open-sans',
-    fontSize: 23,
-    fontWeight: '900'
+    fontFamily: 'open-sans-bold',
+    fontSize: 20
   },
   titleNoBold: {    
     fontFamily: 'open-sans',
-    fontSize: 23,
-    fontWeight: '300'
+    fontSize: 20
   },
   content: {
     fontFamily: 'open-sans',
-    fontSize: 47,
-    fontWeight: '400'
+    fontSize: 44
+  },
+  successful: {
+    fontFamily: 'open-sans-bold',
+    fontSize: 50
   },
   primary: {
     color: Colors.primary,

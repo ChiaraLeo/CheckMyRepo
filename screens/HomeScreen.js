@@ -8,24 +8,25 @@ import Typography from '../components/Typography';
 import Colors from '../constants/Colors';
 import { serviceApi } from '../utils';
 
-const MessageOffline = () => 
+const MessageRepoUserError = () => 
   <Typography variant='titleNoBold'>
     Check your <Typography>username </Typography>{`\n`} 
     or your <Typography>repository</Typography> name
   </Typography>
 
-const MessageRepoUserError = () => 
-  <Typography variant='titleNoBold'>{`Check your\n`} 
-     <Typography> internet connection</Typography>
+const MessageOffline = () => 
+  <Typography variant='titleNoBold'>
+    Check your
+    <Typography variant='title'> internet connection</Typography>
   </Typography>  
 
 const HomeScreen = ({ navigation }) => {
-  const { repo, user } = React.useContext(RepoContext)
-  const [existRepoUser, setExistRepoUser] = React.useState('initial')
-  const [isConnect, setIsConnect] = React.useState(false)
+  const { repo, user, existRepoUser, setExistRepoUser } = React.useContext(RepoContext)
+  const [isConnected, setIsConnected] = React.useState(null)
+  const [isFetching, setIsFetching] = React.useState(false)
 
   let containerColor = 'normalColor'
-  if(existRepoUser === 'not_exist'){
+  if(existRepoUser === 'not_exist' || isConnected === false){
     containerColor = 'errorColor'
   }
 
@@ -33,31 +34,20 @@ const HomeScreen = ({ navigation }) => {
     containerColor = 'successColor'
   }
 
-  onChange = (newState) => {
-    console.log(newState, 'stato')
-    setIsConnect(newState)
-  }
-
-  // useEffect hook calls only once like componentDidMount()
   React.useEffect(() => {
-    // To get current network connection status
-    NetInfo.fetch().then((connectionInfo) => {
-      setNetInfo(connectionInfo)
-    })
-    // Whenever connection status changes below event fires
-    NetInfo.addEventListener('connectionChange', onChange)
-
-    // Our event cleanup function
-    return () => {
-      NetInfo.removeEventListener('connectionChange', onChange)
-    }
+    setIsFetching(true)
+    NetInfo.fetch().then(state => {
+      setIsConnected(state.isConnected)
+      setIsFetching(false)
+    });
   }, [])
 
   React.useEffect(() => {
-    if(navigation.onLine && repo !== 'repo' && user !== 'user') {
+    if(isConnected && repo !== 'repo' && user !== 'user') {
       (async () => {
+        setIsFetching(true)
         const res = await serviceApi(`https://api.github.com/repos/${user}/${repo}`, [], 'GET')
-        console.log(repo, user, res, 'risultato')
+        setIsFetching(false)
         const objectRes = JSON.parse(res)
         if(objectRes.message !== 'Not Found'){
           setExistRepoUser('exist')
@@ -66,7 +56,7 @@ const HomeScreen = ({ navigation }) => {
         }
       })()
     }
-  }, [repo, user, navigation.onLine])
+  }, [repo, user, isConnected])
 
   const sendMessage = async () => {
    const result = await serviceApi('https://pushmore.marc.io/webhook/8iEDhzvRQgJFm5xZVfHZ1eNb', { repoUrl: repo, sender: user })
@@ -75,7 +65,6 @@ const HomeScreen = ({ navigation }) => {
    }else{
 
    }
-   console.log(result, 'RISULTATO')
   }
 
   return <View style={[styles.container, styles[containerColor]]}>
@@ -98,16 +87,18 @@ const HomeScreen = ({ navigation }) => {
             </Typography>
           </Typography>
 
-          {!navigation.onLine && <MessageOffline />}
-          {navigation.onLine && existRepoUser === 'not_exist' && <MessageRepoUserError />}
+          {isFetching &&  <Typography variant='titleNoBold'>Loading...</Typography>}
+
+          {!isConnected && <MessageOffline />}
+          {isConnected && existRepoUser === 'not_exist' && <MessageRepoUserError />}
         </View>
       </View>
       
     </ScrollView>
       {
       existRepoUser === 'exist'
-      ? <ButtonRightBottom diabled={!navigator.onLine} label='SEND' onPress={sendMessage} /> 
-      : <ButtonRightBottom diabled={!navigator.onLine} label='CHECK' onPress={() => navigation.navigate('CheckUser')} /> 
+      ? <ButtonRightBottom diabled={!isConnected || isFetching} label='SEND' onPress={sendMessage} /> 
+      : <ButtonRightBottom diabled={!isConnected || isFetching} label='CHECK' onPress={() => navigation.navigate('CheckUser')} /> 
       }
   </View>
 }
@@ -128,7 +119,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    paddingTop: 30,
+    paddingTop: 50,
   },
   getStartedContainer: {
     marginHorizontal: 50,
