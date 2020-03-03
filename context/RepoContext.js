@@ -1,13 +1,10 @@
-import * as React from 'react';
+import { createContext } from 'react';
 
-const RepoContext = React.createContext({
-  user: 'User',
+export const RepoContext = createContext({
+  user: null,
   setUser: () => {},
-  repo: 'Repo',
-  success: null,
-  message: ''
+  repo: null,
+  setRepo: () => {}
 });
 
 export const RepoContextProvider = RepoContext.Provider
-
-export const RepoContextConsumer = RepoContext.Consumer
