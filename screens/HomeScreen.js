@@ -59,7 +59,7 @@ const HomeScreen = ({ navigation }) => {
   }, [repo, user, isConnected])
 
   const sendMessage = async () => {
-   const result = await serviceApi('https://pushmore.marc.io/webhook/8iEDhzvRQgJFm5xZVfHZ1eNb', { repoUrl: repo, sender: user })
+   const result = await serviceApi('https://pushmore.marc.io/webhook/d3Gm4aEPCuhAUjfbECLLdW41', { repoUrl: repo, sender: user })
    if(result === 'OK'){
     navigation.navigate('Success')
    }else{
